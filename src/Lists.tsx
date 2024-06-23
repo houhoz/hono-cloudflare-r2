@@ -1,4 +1,4 @@
-const List = (props: { list: R2Object[] }) => {
+const Lists = (props: { list: R2Object[] }) => {
   const { list } = props;
   return (
     <html class="h-full bg-white">
@@ -49,4 +49,4 @@ const List = (props: { list: R2Object[] }) => {
   );
 };
 
-export default List;
+export default Lists;
