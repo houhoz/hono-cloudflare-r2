@@ -1,6 +1,8 @@
 import { Hono } from 'hono';
 import { jwt, sign, verify } from 'hono/jwt';
 import { setCookie } from 'hono/cookie';
+import { PrismaClient } from '@prisma/client';
+import { PrismaD1 } from '@prisma/adapter-d1';
 import Lists from './Lists';
 import Uploader from './Uploader';
 import Login from './Login';
@@ -8,6 +10,7 @@ import Login from './Login';
 type Bindings = {
   MY_BUCKET: R2Bucket;
   MY_JWT_SECRET: string;
+  DB: D1Database;
 };
 
 const app = new Hono<{ Bindings: Bindings }>();
@@ -27,7 +30,7 @@ app.get('/', async (c) => {
 });
 
 // login
-app.get('/login', (c) => {
+app.get('/login', async (c) => {
   return c.html(<Login />);
 });
 
@@ -38,12 +41,21 @@ app.get('/list', async (c) => {
 });
 
 app.post('/login', async (c, next) => {
+  const adapter = new PrismaD1(c.env.DB);
+  const prisma = new PrismaClient({ adapter });
+
   const body = await c.req.formData();
-  const usename = body.get('username');
+  const email = body.get('email');
   const password = body.get('password');
-  if (usename === 'admin' && password === '123456') {
+  const user = await prisma.user.findUnique({
+    where: { email },
+  });
+
+  return c.json({ user });
+
+  if (user) {
     const payload = {
-      sub: 'admin',
+      sub: user.id,
       role: 'admin',
       exp: Math.floor(Date.now() / 1000) + 60 * 120, // Token expires in 5 minutes
     };

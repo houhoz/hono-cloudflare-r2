@@ -12,10 +12,10 @@ MY_JWT_SECRET = "my_hono_jwt_secret"
 binding = "MY_BUCKET"
 bucket_name = "memos"
 
-# [[d1_databases]]
-# binding = "DB"
-# database_name = "my-database"
-# database_id = ""
+[[d1_databases]]
+binding = "DB" # i.e. available in your Worker on env.DB
+database_name = "hono-prisma-db"
+database_id = "d8ccb036-b3f4-440d-a3c3-d0adada52e44"
 
 # [ai]
 # binding = "AI"
